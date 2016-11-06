@@ -18,8 +18,8 @@
            [:empty :empty :empty :empty :empty :empty]
            [:empty :empty :empty :full :empty :empty]
            [:empty :empty :empty :empty :empty :empty]
-           [:empty :empty :empty :full :full :empty]
-           [:empty :empty :empty :empty :empty :empty]])
+           [:empty :empty :empty :full :empty :empty]
+           [:full :empty :empty :empty :empty :empty]])
 
 (defn abs [x]
   (if (< x 0) (* x -1) x))
@@ -55,13 +55,15 @@
             (+ (* t y1) (* (- 1 t) y0)))))
 
 
-; how long can a ray starting at x-start/y-start travel in the direction of x-dir/y-dir in grid before hitting a :full in grid (given a max dist)
-(defn ray-length [grid max x-start y-start x-dir y-dir]
-  (let [ray-points (apply line-dda x-start y-start (point-at-dist x-start y-start x-dir y-dir max))]
-    (or (some #(if (= :full (get-in grid %)) %)
-              ray-points)
-        max)))
+; where does a ray starting at x-start/y-start and traveling in the direction of
+; x-dir/y-dir in grid hit a :full wall?
+(defn ray-end-point [grid max x-start y-start x-dir y-dir]
+  (let [ray-points (apply line-dda x-start y-start (point-at-dist x-start y-start x-dir y-dir max))
+        first-wall (some #(if (= :full (get-in grid %)) %)
+                         ray-points)]
+    (or first-wall
+        (point-at-dist x-start y-start x-dir y-dir max))))
 
 
-(print (ray-length grid 10 0 0 1 1))
+(print (ray-end-point grid 10 0 0 1 1))
 
